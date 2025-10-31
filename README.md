@@ -6,11 +6,11 @@
 ---
 
 ## 项目结构
-~/openarm/
-├── Brainco_Hand_ROS2-test_bimunal_hand/        # revo2灵巧手
-├── openarm_mujoco/        #openarm仿真
-├── openarm_can/        # CAN 总线底层驱动（C++）
-└── openarm_ws/         # ROS 2 工作空间（MoveIt、控制器、桥接脚本
+~/openarm/  
+├── Brainco_Hand_ROS2-test_bimunal_hand/        # revo2灵巧手  
+├── openarm_mujoco/        #openarm仿真  
+├── openarm_can/        # CAN 总线底层驱动（C++）  
+└── openarm_ws/         # ROS 2 工作空间（MoveIt、控制器、桥接脚本  
 ---
 
 ## 系统要求
@@ -86,7 +86,6 @@ ros2 launch openarm_bimanual_moveit_config demo.launch.py hardware_type:=real   
 - openarm_right_joint7
 - openarm_right_joint6
 进行订阅要重新进行信息对齐
-
 ---
 
 # 启动流程
@@ -107,11 +106,19 @@ python3 openarm_brigde.py
 **话题消息类型**
 # ArmJoints.msg
 # 7关节机械臂的关节角度、速度、力矩等信息
-
 float64[7] positions     # 7个关节的角度  
 float64[7] velocities    # 7个关节的速度  
 float64[7] efforts       # 7个关节的力矩  
 string arm_name          # 机械臂名称  
+**示例**
+left_msg = ArmJoints()  
+left_msg.positions = left_pos_data  
+left_msg.efforts = left_effort_data  
+left_msg.arm_name = "left_arm"  
+
+self.left_arm_effort_topic_pub.publish(left_msg)  
+self.left_arm_position_topic_pub.publish(left_msg)  
+
 ---
 
 # 关于重力补偿

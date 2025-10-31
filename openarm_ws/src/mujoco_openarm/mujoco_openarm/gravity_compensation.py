@@ -103,7 +103,6 @@ class RobotMujocoNode(Node):
             # 左臂消息
             left_msg = ArmJoints()
             left_msg.positions = left_pos_data
-            left_msg.velocities = self.mj_data.qvel[:7].tolist()
             left_msg.efforts = left_effort_data
             left_msg.arm_name = "left_arm"
 
@@ -113,7 +112,6 @@ class RobotMujocoNode(Node):
             # 右臂消息
             right_msg = ArmJoints()
             right_msg.positions = right_pos_data
-            right_msg.velocities = self.mj_data.qvel[7:14].tolist()
             right_msg.efforts = right_effort_data
             right_msg.arm_name = "right_arm"
 
