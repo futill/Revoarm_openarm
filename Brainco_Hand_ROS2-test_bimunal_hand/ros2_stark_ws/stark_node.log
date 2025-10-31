@@ -1,0 +1,11 @@
+nohup: 忽略输入
+=== Launch Stark Node ===
+[INFO] [1759581663.801785761] [stark_node]: Port: /dev/ttyUSB1, Baudrate: 460800, slave_id: 126, protocol_type: 1, log_level: 2
+2025-10-04T12:41:03.802Z[[32mINFO[0m][src/utils/logging_desktop.rs:14] bc_stark_sdk version: 0.9.2
+2025-10-04T12:41:03.802Z[[32mINFO[0m][src/stark/config.rs:30] Logging initialized with level: Info
+2025-10-04T12:41:03.802Z[[32mINFO[0m][src/stark/config.rs:36] StarkSDK initialized, protocol_type: Modbus
+[INFO] [1759581663.809125819] [stark_node]: Slave[126] SKU Type: 2, Serial Number: BCXTR2147J2500008, Firmware Version: 0.0.14
+
+2025-10-04T12:41:03.809Z[[32mINFO[0m][src/stark/api.rs:1921] touch_sensor_setup values: [1, 1, 1, 1, 1]
+[INFO] [1759582027.313062158] [rclcpp]: signal_handler(signum=15)
+已终止

@@ -1,0 +1,161 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║          Vision Pro 手势控制灵巧手 - 快速启动指南                          ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+┌────────────────────────────────────────────────────────────────────────────┐
+│ 第一步：启动灵巧手硬件控制节点                                            │
+└────────────────────────────────────────────────────────────────────────────┘
+在第 1 个终端运行：
+
+    cd /home/scy/stark-serialport-example/ros2_stark_ws
+    ./stark_serial_manager.sh launch
+
+预期输出：
+    ✓ Launching left hand node (stark_node_left)...
+    ✓ Launching right hand node (stark_node_right)...
+    ✓ Both nodes are running. Press Ctrl+C to stop.
+
+
+┌────────────────────────────────────────────────────────────────────────────┐
+│ 第二步：启动桥接节点（转发 Vision Pro 命令到硬件）                        │
+└────────────────────────────────────────────────────────────────────────────┘
+在第 2 个终端运行：
+
+    cd /home/scy/stark-serialport-example/ros2_stark_ws
+    ./start_bridge.sh
+
+预期输出：
+    ✓ Hand Control Bridge Node Started
+    ✓ Left hand:  Subscribe /left_hand/motor_commands  → Publish /set_motor_multi_126
+    ✓ Right hand: Subscribe /right_hand/motor_commands → Publish /set_motor_multi_127
+    ✓ Waiting for commands from Vision Pro...
+
+
+┌────────────────────────────────────────────────────────────────────────────┐
+│ 第三步：运行 Vision Pro 控制脚本                                           │
+└────────────────────────────────────────────────────────────────────────────┘
+在第 3 个终端运行你的 Vision Pro 脚本：
+
+    python3 your_visionpro_script.py
+
+现在你的手势应该能控制灵巧手了！
+
+
+┌────────────────────────────────────────────────────────────────────────────┐
+│ 测试方法（可选）                                                           │
+└────────────────────────────────────────────────────────────────────────────┘
+
+方法 1: 使用测试脚本（在第 3 个终端运行）
+
+    cd /home/scy/stark-serialport-example/ros2_stark_ws
+    ./run_test.sh
+
+    这将自动测试：张开、握拳、单个手指、平滑运动等
+
+
+方法 2: 手动发布命令
+
+    # 握拳（左手）
+    ros2 topic pub --once /left_hand/motor_commands ros2_stark_msgs/msg/SetMotorMulti '{mode: 1, positions: [300, 300, 1000, 1000, 1000, 1000]}'
+
+    # 张开（左手）
+    ros2 topic pub --once /left_hand/motor_commands ros2_stark_msgs/msg/SetMotorMulti '{mode: 1, positions: [400, 400, 0, 0, 0, 0]}'
+
+    # 握拳（右手）
+    ros2 topic pub --once /right_hand/motor_commands ros2_stark_msgs/msg/SetMotorMulti '{mode: 1, positions: [300, 300, 1000, 1000, 1000, 1000]}'
+
+    # 张开（右手）
+    ros2 topic pub --once /right_hand/motor_commands ros2_stark_msgs/msg/SetMotorMulti '{mode: 1, positions: [400, 400, 0, 0, 0, 0]}'
+
+
+┌────────────────────────────────────────────────────────────────────────────┐
+│ 常用调试命令                                                               │
+└────────────────────────────────────────────────────────────────────────────┘
+
+查看所有话题：
+    ros2 topic list
+
+监控 Vision Pro 发布的命令：
+    ros2 topic echo /left_hand/motor_commands
+    ros2 topic echo /right_hand/motor_commands
+
+监控发送到硬件的命令：
+    ros2 topic echo /set_motor_multi_126
+    ros2 topic echo /set_motor_multi_127
+
+检查话题频率：
+    ros2 topic hz /left_hand/motor_commands
+
+
+┌────────────────────────────────────────────────────────────────────────────┐
+│ 故障排查                                                                   │
+└────────────────────────────────────────────────────────────────────────────┘
+
+问题 1: 串口权限不足
+解决：
+    sudo chmod 666 /dev/ttyUSB0
+    sudo chmod 666 /dev/ttyUSB1
+
+问题 2: 桥接节点收不到 Vision Pro 数据
+检查：
+    - ROS_DOMAIN_ID 是否都设置为 5
+    - Vision Pro 脚本是否正常运行
+    - ros2 topic list | grep hand
+
+问题 3: 灵巧手不动
+检查：
+    - stark_serial_manager.sh launch 是否正常运行
+    - 串口设备是否正确连接
+    - ros2 topic echo /set_motor_multi_126
+
+
+┌────────────────────────────────────────────────────────────────────────────┐
+│ 重要配置                                                                   │
+└────────────────────────────────────────────────────────────────────────────┘
+
+ROS_DOMAIN_ID: 5 (所有终端必须一致)
+
+左手配置：
+    - Slave ID: 126 (0x7e)
+    - 串口: /dev/ttyUSB0
+    - 话题: /set_motor_multi_126
+
+右手配置：
+    - Slave ID: 127 (0x7f)
+    - 串口: /dev/ttyUSB1
+    - 话题: /set_motor_multi_127
+
+手指位置范围：[0, 1000]
+    - 0: 张开
+    - 1000: 完全弯曲
+
+
+┌────────────────────────────────────────────────────────────────────────────┐
+│ 停止系统                                                                   │
+└────────────────────────────────────────────────────────────────────────────┘
+
+在每个终端按 Ctrl+C 停止对应的节点
+
+停止顺序（推荐）：
+    1. 停止 Vision Pro 脚本
+    2. 停止桥接节点
+    3. 停止硬件控制节点
+
+
+┌────────────────────────────────────────────────────────────────────────────┐
+│ 文件说明                                                                   │
+└────────────────────────────────────────────────────────────────────────────┘
+
+hand_control_bridge.py      - 桥接节点主程序
+start_bridge.sh              - 桥接节点启动脚本
+test_hand_control.py         - 测试脚本主程序
+run_test.sh                  - 测试脚本启动器（自动设置环境）
+stark_serial_manager.sh      - 硬件控制节点启动脚本
+HAND_CONTROL_README.md       - 详细使用说明
+QUICK_START.txt              - 本文件（快速参考）
+
+
+╔════════════════════════════════════════════════════════════════════════════╗
+║ 更多详细信息，请查看: HAND_CONTROL_README.md                              ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
