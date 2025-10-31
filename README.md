@@ -104,9 +104,23 @@ python3 openarm_brigde.py
 # 进行力位混控只需要同时对effort和postion话题进行订阅并发送data
 # 同理只对position进行订阅发送data，进行位置控制
 
+**话题消息类型**
+# ArmJoints.msg
+# 7关节机械臂的关节角度、速度、力矩等信息
+
+float64[7] positions     # 7个关节的角度  
+float64[7] velocities    # 7个关节的速度  
+float64[7] efforts       # 7个关节的力矩  
+string arm_name          # 机械臂名称  
 ---
 
 # 关于重力补偿
+**前提条件**
+-pip install pin
+-pip install mujoco
+-到mujoco仓库下载源码编译
+
+**启动**
 ros2 run mujoco_openarm gravity_compensation
 
 ---
